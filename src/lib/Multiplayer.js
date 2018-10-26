@@ -90,19 +90,21 @@ export default class Multiplayer extends Player {
 	 */
 	registerForUpdates() {
 		this.socket.on('update-players', playersData => {
-			const { pos, angle, lv, av, onGround, id } = playersData
-			// skip myself
-			if (id === this.socket.id) return
+			for (const id in playersData) {
+				// skip myself
+				if (id === this.socket.id) continue
 
-			const body = this.opponents[id].body
+				const body = this.opponents[id].body
+				const { pos, angle, lv, av, onGround } = playersData[id]
 
-			// Make things buttery smooth and in sync with difference vector
-			const posDelta = new Vec2(pos).sub(body.getPosition())
+				// Make things buttery smooth and in sync with difference vector
+				const posDelta = new Vec2(pos).sub(body.getPosition())
 
-			body.setLinearVelocity(new Vec2(lv).add(posDelta))
-			body.setAngle(angle)
-			body.setAngularVelocity(av)
-			this.opponents[id].onGround = onGround			
+				body.setLinearVelocity(new Vec2(lv).add(posDelta))
+				body.setAngle(angle)
+				body.setAngularVelocity(av)
+				this.opponents[id].onGround = onGround
+			}
 		})
 	}
 

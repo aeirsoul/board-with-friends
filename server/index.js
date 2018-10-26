@@ -82,10 +82,16 @@ io.on('connection', function(socket) {
 
 		games[gameId][socket.id] = data
 
-		const packet = Object.assign(games[gameId][socket.id], {id: socket.id})
+		// Wait until we have received at least one update from each client
+		for (const id of Object.keys(games[gameId])) {
+			if (Object.keys(games[gameId][id]).length === 0) {
+				return
+			}
+		}
+
 
 		// Send the data to all the other players in this game
-		socket.broadcast.to(gameId).emit('update-players', packet)
+		socket.broadcast.to(gameId).emit('update-players', games[gameId])
 	})
 
 	socket.on('start-game', function(gameId) {
