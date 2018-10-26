@@ -91,8 +91,8 @@ export default class Multiplayer extends Player {
 	registerForUpdates() {
 		this.socket.on('update-players', playersData => {
 			for (const id in playersData) {
-				// skip myself
-				if (id === this.socket.id) continue
+				// skip myself or if no data
+				if (id === this.socket.id || Object.keys(playersData[id]).length === 0) continue
 
 				const body = this.opponents[id].body
 				const { pos, angle, lv, av, onGround } = playersData[id]
